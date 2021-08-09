@@ -6,6 +6,7 @@ from tokens import spotify_user_id, refresh_token, access_token
 
 
 # Variables
+song_counter = 0
 header = ""
 song_array = []
 artist_array = []
@@ -19,17 +20,19 @@ song_info = {}
 # Constructor
 def __init__(self):
     self.spotify_user_id = spotify_user_id
-    self.spotify_token = spotify_token
+    self.access_token = access_token
+    self.refresh_token = refresh_token
     self.spotify_token = ""
 
 
-# Gets the Header Used in the Spotify API
+# Returns the Header Used in the Spotify API
 def get_header():
     header = {"Content-Type": "application/json", "Authorization": "Bearer {}".format(spotify_token)}
     return header
 
 
 # Creates a Playlist on Spotify
+# Returns the Playlist ID
 def create_playlist():
 
     date_today = date.today().strftime("%m/%d/%Y")
@@ -39,9 +42,9 @@ def create_playlist():
 
     request_body = json.dumps({ "name": "Tops Songs From " + date_today, "description": "Tops Songs from Rolling Loud", "public": False })
     
-    query = "https://api.spotify.com/v1/users/{}/playlists".format(spotify_user_id)
+    queryString = "https://api.spotify.com/v1/users/{}/playlists".format(spotify_user_id)
     
-    response = requests.post(query, data=request_body, headers=get_header())
+    response = requests.post(queryString, data = request_body, headers = get_header())
     
     response_json = response.json()
 
@@ -51,17 +54,17 @@ def create_playlist():
 # Gets the Spotify ID For Each Song Given the Song Name & Artist
 def get_song_id(song_name, artist):
     
-    query = "https://api.spotify.com/v1/search?query=track%3A{}+artist%3A{}&type=track&offset=0&limit=20".format(song_name, artist)
+    queryString = "https://api.spotify.com/v1/search?query=track%3A{}+artist%3A{}&type=track&offset=0&limit=20".format(song_name, artist)
 
-    response = requests.get(query, headers=get_header())
+    response = requests.get(queryString, headers = get_header())
 
     response_json = response.json()
 
     songs = response_json["tracks"]["items"]
 
-    uri = songs[0]["uri"]
+    song_uri = songs[0]["uri"]
 
-    return uri
+    return song_uri
 
 
 # Adds Songs to the Created Playlist
@@ -73,9 +76,9 @@ def add_songs_to_playlist():
 
     request_data = json.dumps(all_song_uri)
    
-    query = "https://api.spotify.com/v1/playlists/{}/tracks".format(playlist_id)
+    queryString = "https://api.spotify.com/v1/playlists/{}/tracks".format(playlist_id)
 
-    response = requests.post(query, data=request_data, headers=get_header())
+    response = requests.post(queryString, data = request_data, headers = get_header())
 
     response_json = response.json()
 
@@ -87,7 +90,7 @@ def refresh():
 
     query = "https://accounts.spotify.com/api/token"
 
-    response = requests.post(query, data={"grant_type": "refresh_token", "refresh_token": refresh_token}, headers={"Authorization": "Basic " + access_token})
+    response = requests.post(query, data = {"grant_type": "refresh_token", "refresh_token": refresh_token}, headers = {"Authorization": "Basic " + access_token})
 
     response_json = response.json()
 
@@ -133,7 +136,11 @@ for artist in main_artist:
 
 
 for each_artist in artist_array:
+
     if each_artist in wanted_artists:
+
+        song_counter += 1
+        
         index = artist_array.index(each_artist)
         wanted_artist_array.append(artist_array[index])
         wanted_song_array.append(song_array[index])
@@ -153,3 +160,9 @@ for song in wanted_song_array:
 
 
 add_songs_to_playlist()
+
+
+if song_counter == 0:
+    print("None of your requested artists had songs in the top songs of the week!")
+else:
+    print("Successfully Added Songs to Playlist")
