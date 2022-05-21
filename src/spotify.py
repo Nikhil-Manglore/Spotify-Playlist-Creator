@@ -10,8 +10,8 @@ song_counter = 0
 header = ""
 song_array = []
 artist_array = []
-wanted_artists = ["Lil Uzi Vert", "The Kid LAROI", "Jack Harlow", "Kendrick Lamar", "Logic", "Lil Tjay", "Drake", "Lil Tecca", "Pop Smoke",
-                    "Juice Wrld", "Lil Baby", "Lil Nas X", "Walker Hayes", "Post Malone"]
+wanted_artists = ["Lil Uzi Vert", "Travis Scott", "Jack Harlow", "Kendrick Lamar", "Logic", "Lil Tjay", "Drake", "Lil Tecca", "Pop Smoke",
+                    "Juice Wrld", "Lil Baby", "Lil Nas X", "Post Malone"]
 wanted_artist_array = []
 wanted_song_array = []
 song_info = {}
